@@ -51,12 +51,23 @@ rustPlatform.buildRustPackage rec {
     makeWrapper
   ];
 
-  # Linked at build time
   buildInputs = [
     libarchive
     openssl
     fontconfig
-  ] ++ runtimeLibs;
+  ]
+  ++ runtimeLibs;
+
+  postInstall = ''
+    install -Dm644 assets/Rust4Diva.desktop \
+      $out/share/applications/Rust4Diva.desktop
+
+    substituteInPlace $out/share/applications/Rust4Diva.desktop \
+      --replace-fail "Exec=/usr/bin/rust4diva" "Exec=$out/bin/rust4diva"
+          
+    install -Dm644 assets/rust4diva.svg \
+      $out/share/icons/hicolor/scalable/apps/rust4diva.svg
+  '';
 
   postFixup = ''
     wrapProgram $out/bin/rust4diva \
